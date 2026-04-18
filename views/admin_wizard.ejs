@@ -1,0 +1,103 @@
+<%- include('partials/top', { pageTitle: 'Admin Quick Setup Wizard' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Admin Setup Wizard</p>
+  <h1>Quick Setup For New Company Ops</h1>
+  <p>Create a site, then optionally add one manager, one employee, and one client with approvals in a single flow.</p>
+</section>
+
+<section class="card">
+  <h2>Current Company</h2>
+  <p><strong><%= company.name %></strong></p>
+  <p class="muted">You can optionally rename this company below during setup.</p>
+</section>
+
+<section class="card">
+  <h2>Wizard Form</h2>
+  <form method="POST" action="<%= withBase('/admin/wizard') %>" class="form-grid">
+    <label>
+      Company name (optional rename)
+      <input name="companyName" placeholder="Leave empty to keep current name" />
+    </label>
+
+    <label>
+      Site name
+      <input name="siteName" required />
+    </label>
+
+    <label>
+      Site address
+      <input name="siteAddress" required />
+    </label>
+
+    <label>
+      Site manager representative
+      <input name="siteManagerRepresentative" />
+    </label>
+
+    <fieldset>
+      <legend>Manager Account (Optional)</legend>
+      <label>
+        Full name
+        <input name="managerName" />
+      </label>
+      <label>
+        Email
+        <input type="email" name="managerEmail" />
+      </label>
+      <label>
+        Password
+        <input type="password" name="managerPassword" />
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Employee Account (Optional)</legend>
+      <label>
+        Full name
+        <input name="employeeName" />
+      </label>
+      <label>
+        Email
+        <input type="email" name="employeeEmail" />
+      </label>
+      <label>
+        Password
+        <input type="password" name="employeePassword" />
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Client Account (Optional)</legend>
+      <label>
+        Full name
+        <input name="clientName" />
+      </label>
+      <label>
+        Email
+        <input type="email" name="clientEmail" />
+      </label>
+      <label>
+        Password
+        <input type="password" name="clientPassword" />
+      </label>
+    </fieldset>
+
+    <button class="btn" type="submit">Run Wizard</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Existing Sites</h2>
+  <% if (!sites.length) { %>
+    <p>No sites yet.</p>
+  <% } else { %>
+    <ul class="list">
+      <% sites.forEach((site) => { %>
+        <li><%= site.name %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

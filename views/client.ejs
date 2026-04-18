@@ -1,0 +1,101 @@
+<%- include('partials/top', { pageTitle: 'Client Portal' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Client Portal</p>
+  <h1>Approved Site Updates</h1>
+  <p>View only your approved sites and message manager/admin directly.</p>
+</section>
+
+<section class="card-grid two">
+  <article class="card">
+    <h2>Your Approved Sites</h2>
+    <% if (!approvedSites.length) { %>
+      <p>No sites are approved for this account yet.</p>
+    <% } else { %>
+      <ul class="list">
+        <% approvedSites.forEach((site) => { %>
+          <li>
+            <strong><%= site.name %></strong><br />
+            <span class="muted"><%= site.address %></span><br />
+            <span class="muted">Manager rep: <%= site.manager_representative || 'n/a' %></span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </article>
+
+  <article class="card">
+    <h2>Message Manager/Admin</h2>
+    <% const messageAction = mode === 'token' ? withBase(`/client/link/${token}/message`) : withBase('/client/message'); %>
+    <form method="POST" action="<%= messageAction %>" class="form-grid compact">
+      <label>
+        Site (optional)
+        <select name="siteId">
+          <option value="">General company message</option>
+          <% approvedSites.forEach((site) => { %>
+            <option value="<%= site.id %>"><%= site.name %></option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>
+        Recipient
+        <select name="toUserId" required>
+          <option value="">Select admin/manager</option>
+          <% admins.forEach((admin) => { %>
+            <option value="<%= admin.id %>"><%= admin.name %> (<%= admin.email %>)</option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>
+        Subject
+        <input name="subject" required />
+      </label>
+
+      <label>
+        Message
+        <textarea name="body" rows="5" required></textarea>
+      </label>
+
+      <button class="btn" type="submit">Send Message</button>
+    </form>
+
+    <% if (mode !== 'token' && portalLink) { %>
+      <p class="helper-note">Your direct client link: <a href="<%= withBase(`/client/link/${portalLink.token}`) %>"><%= withBase(`/client/link/${portalLink.token}`) %></a></p>
+    <% } %>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Onsite Updates</h2>
+  <% if (!updates.length) { %>
+    <p>No approved updates are available yet.</p>
+  <% } else { %>
+    <div class="stack-list">
+      <% updates.forEach((update) => { %>
+        <article class="card inset">
+          <h3><%= update.title %></h3>
+          <p class="muted">
+            <%= update.site_name %> | posted by <%= update.author_name %> | occurred <%= update.occurrence_date %> <%= update.occurrence_time %>
+          </p>
+          <p><%= update.details %></p>
+          <p class="muted">General location: <%= update.general_location %></p>
+          <% if (update.client_notified) { %>
+            <p class="muted">Client notified: <%= update.client_notified %></p>
+          <% } %>
+          <% if (update.image_path) { %>
+            <a class="btn tiny ghost" href="<%= withBase(update.image_path) %>" target="_blank" rel="noopener">
+              Download <%= update.attachment_name || 'attachment' %>
+            </a>
+            <% if (update.attachment_mime && update.attachment_mime.startsWith('image/')) { %>
+              <img src="<%= withBase(update.image_path) %>" alt="Onsite update attachment" class="update-img" />
+            <% } %>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

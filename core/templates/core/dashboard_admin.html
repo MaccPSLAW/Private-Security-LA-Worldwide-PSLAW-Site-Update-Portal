@@ -1,0 +1,97 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Admin Dashboard | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h2>Company Admin Dashboard</h2>
+  <p>Role: {{ profile.get_role_display }} | Company: {{ profile.company.name }}</p>
+  <a class="cta-link" href="{% url 'admin-portal' %}">Open Company Management</a>
+</section>
+
+<section class="panel">
+  <h3>Filter Activity</h3>
+  <form method="get" class="inline-filter">
+    <label for="site">Site</label>
+    <select id="site" name="site">
+      <option value="">All Sites</option>
+      {% for site in company_sites %}
+        <option value="{{ site.id }}" {% if selected_site_id == site.id|stringformat:'s' %}selected{% endif %}>{{ site.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="issue_priority">Issue Priority</label>
+    <select id="issue_priority" name="issue_priority">
+      <option value="">All</option>
+      <option value="high" {% if issue_priority == 'high' %}selected{% endif %}>High</option>
+      <option value="med" {% if issue_priority == 'med' %}selected{% endif %}>Medium</option>
+      <option value="low" {% if issue_priority == 'low' %}selected{% endif %}>Low</option>
+      <option value="general" {% if issue_priority == 'general' %}selected{% endif %}>General</option>
+    </select>
+
+    <label for="message_priority">Message Priority</label>
+    <select id="message_priority" name="message_priority">
+      <option value="">All</option>
+      <option value="high" {% if message_priority == 'high' %}selected{% endif %}>High</option>
+      <option value="med" {% if message_priority == 'med' %}selected{% endif %}>Medium</option>
+      <option value="low" {% if message_priority == 'low' %}selected{% endif %}>Low</option>
+      <option value="general" {% if message_priority == 'general' %}selected{% endif %}>General</option>
+    </select>
+
+    <label for="start_date">From</label>
+    <input id="start_date" type="date" name="start_date" value="{{ start_date }}">
+
+    <label for="end_date">To</label>
+    <input id="end_date" type="date" name="end_date" value="{{ end_date }}">
+
+    <button type="submit">Apply</button>
+  </form>
+</section>
+
+<section class="split-grid">
+  <article class="panel">
+    <h3>Recent Onsite Updates</h3>
+    <div class="card-list">
+      {% for item in updates %}
+        <div class="card">
+          <h4>{{ item.title }} <span class="badge">{{ item.site.name }}</span></h4>
+          <p>{{ item.details|truncatechars:220 }}</p>
+          <small>{{ item.occurrence_datetime }} by {{ item.created_by.user.get_full_name|default:item.created_by.user.username }}</small>
+        </div>
+      {% empty %}
+        <p>No updates yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <h3>Recent Site Issues</h3>
+    <div class="card-list">
+      {% for issue in issues %}
+        <div class="card priority-{{ issue.priority }}">
+          <h4>{{ issue.title }}</h4>
+          <p>{{ issue.description|truncatechars:180 }}</p>
+          <small>{{ issue.site.name }} | {{ issue.get_priority_display }} | {{ issue.get_status_display }}</small>
+        </div>
+      {% empty %}
+        <p>No issues reported.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="panel">
+  <h3>Direct Messages From Clients/Staff</h3>
+  <div class="card-list">
+    {% for msg in direct_messages %}
+      <div class="card priority-{{ msg.priority }}">
+        <h4>{{ msg.subject }}</h4>
+        <p>{{ msg.body|truncatechars:220 }}</p>
+        <small>{{ msg.sender.user.username }}{% if msg.site %} | {{ msg.site.name }}{% endif %} | {{ msg.created_at }}</small>
+      </div>
+    {% empty %}
+      <p>No messages yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

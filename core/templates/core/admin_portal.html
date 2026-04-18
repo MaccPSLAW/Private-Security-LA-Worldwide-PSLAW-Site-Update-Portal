@@ -1,0 +1,101 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Company Portal | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h2>Company Management Portal</h2>
+  <p>Create and manage companies, site profiles, staff approvals, and client invite links.</p>
+</section>
+
+<section class="split-grid">
+  <article class="panel">
+    <h3>Create Company</h3>
+    <form method="post" class="grid-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="company">
+      {{ company_form.as_p }}
+      <button type="submit">Save Company</button>
+    </form>
+  </article>
+
+  <article class="panel">
+    <h3>Create Site Profile</h3>
+    <form method="post" class="grid-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="site">
+      {{ site_form.as_p }}
+      <button type="submit">Save Site</button>
+    </form>
+  </article>
+</section>
+
+<section class="split-grid">
+  <article class="panel">
+    <h3>Approve Staff for Site</h3>
+    <form method="post" class="grid-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="access">
+      {{ access_form.as_p }}
+      <button type="submit">Approve Access</button>
+    </form>
+  </article>
+
+  <article class="panel">
+    <h3>Create Client Invite Link</h3>
+    <form method="post" class="grid-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="invite">
+      {{ invite_form.as_p }}
+      <button type="submit">Generate Invite</button>
+    </form>
+  </article>
+</section>
+
+<section class="split-grid">
+  <article class="panel">
+    <h3>Sites</h3>
+    <div class="card-list">
+      {% for site in sites %}
+        <div class="card">
+          <h4>{{ site.name }}</h4>
+          <p>{{ site.address }}</p>
+          <small>Manager Rep: {{ site.manager_representative }}</small>
+        </div>
+      {% empty %}
+        <p>No site profiles yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <h3>Site Approvals</h3>
+    <div class="card-list">
+      {% for approval in site_access %}
+        <div class="card">
+          <h4>{{ approval.profile.user.username }}</h4>
+          <p>{{ approval.site.name }}</p>
+          <small>Approved by {{ approval.approved_by|default:'N/A' }}</small>
+        </div>
+      {% empty %}
+        <p>No site approvals yet.</p>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="panel">
+  <h3>Client Invites</h3>
+  <div class="card-list">
+    {% for invite in invites %}
+      <div class="card">
+        <h4>{{ invite.email }}</h4>
+        <p>{{ invite.site.name }} | {% if invite.is_used %}Used{% else %}Pending{% endif %}</p>
+        <small>Token: {{ invite.token }} | Expires: {{ invite.expires_at }}</small>
+      </div>
+    {% empty %}
+      <p>No client invites yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

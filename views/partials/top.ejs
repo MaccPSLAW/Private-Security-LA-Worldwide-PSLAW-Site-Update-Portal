@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'PSLAW Site Update Portal' %></title>
+  <meta name="theme-color" content="#0f6a5c" />
+  <link rel="manifest" href="<%= withBase('/public/manifest.webmanifest') %>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<%= withBase('/public/styles.css') %>" />
+</head>
+<body>
+  <div class="page-bg"></div>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <a class="brand" href="<%= withBase('/') %>">PSLAW Update Portal</a>
+      <% if (currentUser) { %>
+        <span class="chip"><%= currentUser.companyName %></span>
+      <% } else if (typeof tokenClient !== 'undefined' && tokenClient) { %>
+        <span class="chip"><%= tokenClient.company_name %></span>
+      <% } %>
+    </div>
+
+    <nav class="nav-links">
+      <% if (currentUser) { %>
+        <% const dashboardPath = currentUser.role === 'company_admin' || currentUser.role === 'manager' ? '/admin' : currentUser.role === 'employee' ? '/employee' : '/client'; %>
+        <a class="<%= currentPath === dashboardPath ? 'nav-active' : '' %>" href="<%= withBase(dashboardPath) %>">Dashboard</a>
+        <a class="<%= currentPath.startsWith('/stream') ? 'nav-active' : '' %>" href="<%= withBase('/stream') %>">Chat Stream</a>
+        <% if (currentUser.role === 'company_admin' || currentUser.role === 'manager' || currentUser.role === 'employee') { %>
+          <a class="<%= currentPath === '/updates/new' ? 'nav-active' : '' %>" href="<%= withBase('/updates/new') %>">Add Update</a>
+        <% } %>
+        <form method="POST" action="<%= withBase('/logout') %>">
+          <button type="submit" class="btn ghost">Sign Out</button>
+        </form>
+      <% } else { %>
+        <a href="<%= withBase('/login') %>">Sign In</a>
+        <a href="<%= withBase('/register') %>">Create Profile</a>
+      <% } %>
+    </nav>
+  </header>
+
+  <% if (error) { %>
+    <div class="flash error"><%= error %></div>
+  <% } %>
+
+  <% if (success) { %>
+    <div class="flash success"><%= success %></div>
+  <% } %>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('<%= withBase('/public/sw.js') %>').catch(() => {});
+      });
+    }
+  </script>
+
+  <main class="container">

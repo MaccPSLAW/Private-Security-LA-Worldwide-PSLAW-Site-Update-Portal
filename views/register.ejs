@@ -1,0 +1,64 @@
+<%- include('partials/top', { pageTitle: 'Create Profile' }) %>
+
+<section class="card narrow">
+  <h1>Create Your Profile</h1>
+  <p class="muted">Employees and clients should register under an existing company unless instructed otherwise.</p>
+
+  <form method="POST" action="<%= withBase('/register') %>" class="form-grid">
+    <label>
+      Full name
+      <input type="text" name="name" required />
+    </label>
+
+    <label>
+      Email
+      <input type="email" name="email" required />
+    </label>
+
+    <label>
+      Password
+      <input type="password" name="password" required minlength="8" />
+    </label>
+
+    <label>
+      Role
+      <select name="role" required>
+        <option value="employee">Employee</option>
+        <option value="manager">Manager</option>
+        <option value="client">Client</option>
+        <option value="company_admin">Company Admin</option>
+      </select>
+    </label>
+
+    <fieldset>
+      <legend>Company Selection</legend>
+      <label class="inline-option">
+        <input type="radio" name="companyMode" value="existing" checked />
+        Use Existing Company
+      </label>
+      <label class="inline-option">
+        <input type="radio" name="companyMode" value="new" />
+        Create New Company Profile
+      </label>
+
+      <label>
+        Existing company
+        <select name="companyId">
+          <option value="">Select company</option>
+          <% companies.forEach((company) => { %>
+            <option value="<%= company.id %>"><%= company.name %></option>
+          <% }); %>
+        </select>
+      </label>
+
+      <label>
+        New company name
+        <input type="text" name="companyName" placeholder="Only needed when creating a new company" />
+      </label>
+    </fieldset>
+
+    <button class="btn" type="submit">Create Profile</button>
+  </form>
+</section>
+
+<%- include('partials/bottom') %>

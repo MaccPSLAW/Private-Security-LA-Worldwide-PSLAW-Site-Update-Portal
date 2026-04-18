@@ -1,0 +1,68 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: pslaw-gateway
+    env_file:
+      - .env
+    environment:
+      - FORCE_HTTPS=${GATEWAY_FORCE_HTTPS:-0}
+      - HSTS_MAX_AGE=${GATEWAY_HSTS_MAX_AGE:-31536000}
+    depends_on:
+      django:
+        condition: service_started
+      node:
+        condition: service_started
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/gateway-healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  django:
+    build: .
+    container_name: pslaw-django
+    env_file:
+      - .env
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile.node
+    container_name: pslaw-node
+    env_file:
+      - .env
+    environment:
+      - PORT=3000
+      - BASE_PATH=/node
+    volumes:
+      - node_uploads:/app/uploads
+      - node_data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  media_data:
+  static_data:
+  node_uploads:
+  node_data:

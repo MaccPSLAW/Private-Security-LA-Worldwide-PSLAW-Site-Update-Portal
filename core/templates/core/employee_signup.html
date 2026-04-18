@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Employee Signup | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+  <h2>Employee Profile Signup</h2>
+  <p>Create your staff profile and connect to your company portal.</p>
+  <form method="post" class="grid-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Profile</button>
+  </form>
+</section>
+{% endblock %}

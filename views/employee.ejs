@@ -1,0 +1,204 @@
+<%- include('partials/top', { pageTitle: 'Employee Portal' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Employee Portal</p>
+  <h1>Onsite Operations</h1>
+  <% if (isEmployeeDemo) { %>
+    <p>Demo mode: submit onsite updates only. Client-related options are disabled.</p>
+  <% } else { %>
+    <p>Select your approved site, post update details with photos, or submit a site issue.</p>
+  <% } %>
+</section>
+
+<section class="card">
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="update-tab" type="button">Onsite Update</button>
+    <% if (!isEmployeeDemo) { %>
+      <button class="tab-btn" data-tab="issue-tab" type="button">Site Issue</button>
+    <% } %>
+  </div>
+
+  <div id="update-tab" class="tab-panel active">
+    <h2>Post Onsite Update</h2>
+    <% if (!postableSites.length) { %>
+      <p>You do not currently have posting access to any sites. Contact admin for approval.</p>
+    <% } else { %>
+      <form method="POST" action="<%= withBase('/employee/onsite-updates') %>" enctype="multipart/form-data" class="form-grid">
+        <label>
+          Site selector
+          <select name="siteId" required>
+            <option value="">Select approved site</option>
+            <% postableSites.forEach((site) => { %>
+              <option value="<%= site.id %>"><%= site.name %> - <%= site.address %></option>
+            <% }) %>
+          </select>
+        </label>
+
+        <label>
+          Title
+          <input name="title" required />
+        </label>
+
+        <label>
+          Date of occurrence
+          <input type="date" name="occurrenceDate" required />
+        </label>
+
+        <label>
+          Time of occurrence
+          <input type="time" name="occurrenceTime" required />
+        </label>
+
+        <label>
+          General location on site
+          <input name="generalLocation" placeholder="Parking lot A, lobby, east gate..." required />
+        </label>
+
+        <% if (!isEmployeeDemo) { %>
+          <label>
+            Client staff notified (if applicable)
+            <input name="clientNotified" placeholder="Name / title" />
+          </label>
+
+          <label>
+            Visibility
+            <select name="visibility">
+              <option value="staff_client">Visible to client and staff</option>
+              <option value="staff_only">Staff only</option>
+            </select>
+          </label>
+        <% } %>
+
+        <label>
+          Attachment upload
+          <input type="file" name="attachment" />
+        </label>
+
+        <label>
+          Update details
+          <textarea name="details" rows="5" required></textarea>
+        </label>
+
+        <button class="btn" type="submit">Post Update</button>
+      </form>
+    <% } %>
+  </div>
+
+  <% if (!isEmployeeDemo) { %>
+    <div id="issue-tab" class="tab-panel">
+      <h2>Report Site Issue</h2>
+      <% if (!approvedSites.length) { %>
+        <p>You do not currently have approved sites. Contact admin for approval.</p>
+      <% } else { %>
+        <form method="POST" action="<%= withBase('/employee/site-issues') %>" class="form-grid">
+          <label>
+            Site selector
+            <select name="siteId" required>
+              <option value="">Select approved site</option>
+              <% approvedSites.forEach((site) => { %>
+                <option value="<%= site.id %>"><%= site.name %> - <%= site.address %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <label>
+            Issue title
+            <input name="title" required />
+          </label>
+
+          <label>
+            Issue details
+            <textarea name="details" rows="5" required></textarea>
+          </label>
+
+          <button class="btn" type="submit">Submit Issue</button>
+        </form>
+      <% } %>
+    </div>
+  <% } %>
+</section>
+
+<section class="card-grid two">
+  <article class="card">
+    <h2>Recent Onsite Updates (Approved Sites)</h2>
+    <% if (!updates.length) { %>
+      <p>No updates posted yet.</p>
+    <% } else { %>
+      <div class="stack-list">
+        <% updates.forEach((update) => { %>
+          <div class="card inset">
+            <h3><%= update.title %></h3>
+            <p class="muted"><%= update.site_name %> | by <%= update.author_name %> | <%= update.occurrence_date %> <%= update.occurrence_time %></p>
+            <p class="muted">Status: <strong><%= update.is_active ? 'Active' : 'Deactivated' %></strong></p>
+            <p><%= update.details %></p>
+            <p class="muted">Location: <%= update.general_location %></p>
+            <% if (!isEmployeeDemo && update.client_notified) { %>
+              <p class="muted">Client notified: <%= update.client_notified %></p>
+            <% } %>
+            <% if (update.image_path) { %>
+              <a class="btn tiny ghost" href="<%= withBase(update.image_path) %>" target="_blank" rel="noopener">
+                Download <%= update.attachment_name || 'attachment' %>
+              </a>
+              <% if (update.attachment_mime && update.attachment_mime.startsWith('image/')) { %>
+                <img src="<%= withBase(update.image_path) %>" alt="Onsite update attachment" class="update-img" />
+              <% } %>
+            <% } %>
+            <div class="actions-inline">
+              <% if (update.is_active) { %>
+                <form method="POST" action="<%= withBase('/employee/onsite-updates/' + update.id + '/deactivate') %>" onsubmit="return confirm('Deactivate this document? It will be hidden but not deleted.');">
+                  <button class="btn tiny ghost" type="submit">Deactivate</button>
+                </form>
+              <% } else { %>
+                <form method="POST" action="<%= withBase('/employee/onsite-updates/' + update.id + '/reactivate') %>">
+                  <button class="btn tiny" type="submit">Reactivate</button>
+                </form>
+              <% } %>
+              <form method="POST" action="<%= withBase('/employee/onsite-updates/' + update.id + '/delete-permanent') %>" onsubmit="return confirm('Permanently delete this document and file? This cannot be undone.');">
+                <button class="btn tiny ghost" type="submit">Delete Permanently</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </article>
+
+  <% if (!isEmployeeDemo) { %>
+    <article class="card">
+      <h2>Recent Site Issues (Approved Sites)</h2>
+      <% if (!issues.length) { %>
+        <p>No issues submitted yet.</p>
+      <% } else { %>
+        <div class="stack-list">
+          <% issues.forEach((issue) => { %>
+            <div class="card inset">
+              <h3><%= issue.title %></h3>
+              <p class="muted"><%= issue.site_name %> | by <%= issue.author_name %> | status: <%= issue.status %></p>
+              <p><%= issue.details %></p>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </article>
+  <% } %>
+</section>
+
+<script>
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      tabButtons.forEach((btn) => btn.classList.remove('active'));
+      tabPanels.forEach((panel) => panel.classList.remove('active'));
+
+      button.classList.add('active');
+      const panel = document.getElementById(button.dataset.tab);
+      if (panel) {
+        panel.classList.add('active');
+      }
+    });
+  });
+</script>
+
+<%- include('partials/bottom') %>

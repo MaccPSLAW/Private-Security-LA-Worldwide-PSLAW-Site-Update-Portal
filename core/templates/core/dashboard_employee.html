@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Employee Dashboard | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <h2>Employee Portal</h2>
+  <p>Company: {{ profile.company.name }} | Approved Sites: {{ approved_sites|length }}</p>
+</section>
+
+<section class="panel">
+  <h3>Filter Activity</h3>
+  <form method="get" class="inline-filter">
+    <label for="site">Site</label>
+    <select id="site" name="site">
+      <option value="">All Approved Sites</option>
+      {% for site in approved_sites %}
+        <option value="{{ site.id }}" {% if selected_site_id == site.id|stringformat:'s' %}selected{% endif %}>{{ site.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="issue_priority">Issue Priority</label>
+    <select id="issue_priority" name="issue_priority">
+      <option value="">All</option>
+      <option value="high" {% if issue_priority == 'high' %}selected{% endif %}>High</option>
+      <option value="med" {% if issue_priority == 'med' %}selected{% endif %}>Medium</option>
+      <option value="low" {% if issue_priority == 'low' %}selected{% endif %}>Low</option>
+      <option value="general" {% if issue_priority == 'general' %}selected{% endif %}>General</option>
+    </select>
+
+    <label for="start_date">From</label>
+    <input id="start_date" type="date" name="start_date" value="{{ start_date }}">
+
+    <label for="end_date">To</label>
+    <input id="end_date" type="date" name="end_date" value="{{ end_date }}">
+
+    <button type="submit">Apply</button>
+  </form>
+</section>
+
+<section class="tabs">
+  <div class="tab-head">
+    <a href="#onsite-update">Onsite Update</a>
+    <a href="#site-issue">Site Issue</a>
+    <a href="#history">Recent Activity</a>
+  </div>
+
+  <article id="onsite-update" class="panel">
+    <h3>Onsite Update Tab</h3>
+    <p>Select your approved site, upload image(s), and post update details.</p>
+    <form method="post" action="{% url 'submit-onsite-update' %}" enctype="multipart/form-data" class="grid-form">
+      {% csrf_token %}
+      {{ update_form.as_p }}
+      <button type="submit">Post Onsite Update</button>
+    </form>
+  </article>
+
+  <article id="site-issue" class="panel">
+    <h3>Site Issue Tab</h3>
+    <p>Log operational issues and set priority for manager action.</p>
+    <form method="post" action="{% url 'submit-site-issue' %}" class="grid-form">
+      {% csrf_token %}
+      {{ issue_form.as_p }}
+      <button type="submit">Submit Site Issue</button>
+    </form>
+  </article>
+
+  <article id="history" class="split-grid">
+    <section class="panel">
+      <h3>Recent Updates</h3>
+      <div class="card-list">
+        {% for item in updates %}
+          <div class="card">
+            <h4>{{ item.title }} <span class="badge">{{ item.site.name }}</span></h4>
+            <p>{{ item.details|truncatechars:180 }}</p>
+            {% if item.image %}
+              <img src="{{ item.image.url }}" alt="Update attachment" class="preview-img">
+            {% endif %}
+            <small>{{ item.occurrence_datetime }}</small>
+          </div>
+        {% empty %}
+          <p>No updates posted yet.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>Recent Issues</h3>
+      <div class="card-list">
+        {% for issue in issues %}
+          <div class="card priority-{{ issue.priority }}">
+            <h4>{{ issue.title }}</h4>
+            <p>{{ issue.description|truncatechars:180 }}</p>
+            <small>{{ issue.site.name }} | {{ issue.get_priority_display }}</small>
+          </div>
+        {% empty %}
+          <p>No issues submitted yet.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </article>
+</section>
+{% endblock %}

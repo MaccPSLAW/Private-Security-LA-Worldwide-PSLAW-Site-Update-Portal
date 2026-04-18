@@ -1,0 +1,290 @@
+<%- include('partials/top', { pageTitle: 'Admin Dashboard' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Company Admin Portal</p>
+  <h1><%= company.name %></h1>
+  <p>Manage company profile, sites, user approvals, onsite updates, issues, and client links.</p>
+  <div class="hero-actions">
+    <a class="btn" href="<%= withBase('/admin/wizard') %>">Run Quick Setup Wizard</a>
+    <a class="btn ghost" href="<%= withBase('/admin/export/updates.csv') %>">Export Updates CSV</a>
+    <a class="btn ghost" href="<%= withBase('/admin/export/issues.csv') %>">Export Issues CSV</a>
+    <a class="btn ghost" href="<%= withBase('/admin/export/messages.csv') %>">Export Messages CSV</a>
+    <a class="btn ghost" href="<%= withBase('/admin/export/audit.csv') %>">Export Audit CSV</a>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Edit Company Profile</h2>
+  <form method="POST" action="<%= withBase('/admin/company') %>" class="form-grid compact">
+    <label>
+      Company name
+      <input name="name" value="<%= company.name %>" required />
+    </label>
+    <button class="btn" type="submit">Save Company</button>
+  </form>
+</section>
+
+<section class="card-grid two">
+  <article class="card">
+    <h2>Create Site Profile</h2>
+    <form method="POST" action="<%= withBase('/admin/sites') %>" class="form-grid compact">
+      <label>
+        Site name
+        <input name="name" required />
+      </label>
+      <label>
+        Address
+        <input name="address" required />
+      </label>
+      <label>
+        Manager representative
+        <input name="managerRepresentative" />
+      </label>
+      <button class="btn" type="submit">Create Site</button>
+    </form>
+  </article>
+
+  <article class="card">
+    <h2>Client Portal Links</h2>
+    <% if (!clientPortalLinks.length) { %>
+      <p>No client accounts found yet.</p>
+    <% } else { %>
+      <ul class="list">
+        <% clientPortalLinks.forEach((item) => { %>
+          <li>
+            <strong><%= item.user_name %></strong>
+            <a href="<%= withBase(`/client/link/${item.token}`) %>" target="_blank" rel="noopener"><%= withBase(`/client/link/${item.token}`) %></a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Sites</h2>
+  <% if (!sites.length) { %>
+    <p>No sites created yet.</p>
+  <% } %>
+  <div class="stack-list">
+    <% sites.forEach((site) => { %>
+      <form method="POST" action="<%= withBase(`/admin/sites/${site.id}/update`) %>" class="card inset">
+        <h3><%= site.name %></h3>
+        <label>
+          Site name
+          <input name="name" value="<%= site.name %>" required />
+        </label>
+        <label>
+          Address
+          <input name="address" value="<%= site.address %>" required />
+        </label>
+        <label>
+          Manager representative
+          <input name="managerRepresentative" value="<%= site.manager_representative || '' %>" />
+        </label>
+        <button class="btn" type="submit">Save Site</button>
+      </form>
+    <% }) %>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Users + Site Access Approval</h2>
+  <% if (!users.length || !sites.length) { %>
+    <p>Add users and sites to start access approvals.</p>
+  <% } %>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Approve Site Access</th>
+          <th>Toggle Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach((u) => { %>
+          <tr>
+            <td>
+              <strong><%= u.name %></strong><br />
+              <span class="muted"><%= u.email %></span>
+            </td>
+            <td><%= u.role %></td>
+            <td><%= u.active ? 'active' : 'inactive' %></td>
+            <td>
+              <% if (!sites.length) { %>
+                <span class="muted">No sites</span>
+              <% } else { %>
+                <% sites.forEach((s) => { %>
+                  <form method="POST" action="<%= withBase('/admin/access') %>" class="inline-form">
+                    <input type="hidden" name="userId" value="<%= u.id %>" />
+                    <input type="hidden" name="siteId" value="<%= s.id %>" />
+                    <label>
+                      <%= s.name %>
+                      <select name="canPostUpdates">
+                        <option value="0" <%= accessMap[`${u.id}-${s.id}`] === 0 ? 'selected' : '' %>>View only</option>
+                        <option value="1" <%= accessMap[`${u.id}-${s.id}`] === 1 ? 'selected' : '' %>>Can post updates</option>
+                      </select>
+                    </label>
+                    <button type="submit" class="btn tiny">Save</button>
+                  </form>
+                <% }) %>
+              <% } %>
+            </td>
+            <td>
+              <form method="POST" action="<%= withBase(`/admin/users/${u.id}/toggle-active`) %>">
+                <button type="submit" class="btn tiny ghost"><%= u.active ? 'Deactivate' : 'Activate' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card-grid two">
+  <article class="card">
+    <h2>Recent Onsite Updates</h2>
+    <% if (!updates.length) { %>
+      <p>No updates yet.</p>
+    <% } else { %>
+      <div class="stack-list">
+        <% updates.forEach((update) => { %>
+          <div class="card inset">
+            <h3><%= update.title %></h3>
+            <p class="muted"><%= update.site_name %> | <%= update.author_name %> | <%= dayjs(update.created_at).format('MMM D, YYYY h:mm A') %></p>
+            <p class="muted">Occurred: <%= update.occurrence_date %> <%= update.occurrence_time %> | visibility: <%= update.visibility %></p>
+            <p class="muted">Status: <strong><%= update.is_active ? 'Active' : 'Deactivated' %></strong></p>
+            <% if (update.image_path) { %>
+              <a class="btn tiny ghost" href="<%= withBase(update.image_path) %>" target="_blank" rel="noopener">
+                Download <%= update.attachment_name || 'attachment' %>
+              </a>
+              <% if (update.attachment_mime && update.attachment_mime.startsWith('image/')) { %>
+                <img src="<%= withBase(update.image_path) %>" alt="Onsite update attachment" class="update-img" />
+              <% } %>
+            <% } %>
+            <div class="actions-inline">
+              <% if (update.is_active) { %>
+                <form method="POST" action="<%= withBase('/admin/updates/' + update.id + '/deactivate') %>" onsubmit="return confirm('Deactivate this document? It will be hidden but not deleted.');">
+                  <button class="btn tiny ghost" type="submit">Deactivate</button>
+                </form>
+              <% } else { %>
+                <form method="POST" action="<%= withBase('/admin/updates/' + update.id + '/reactivate') %>">
+                  <button class="btn tiny" type="submit">Reactivate</button>
+                </form>
+              <% } %>
+              <form method="POST" action="<%= withBase('/admin/updates/' + update.id + '/delete-permanent') %>" onsubmit="return confirm('Permanently delete this document and file? This cannot be undone.');">
+                <button class="btn tiny ghost" type="submit">Delete Permanently</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </article>
+
+  <article class="card">
+    <h2>Site Issues</h2>
+    <% if (!issues.length) { %>
+      <p>No issues yet.</p>
+    <% } else { %>
+      <div class="stack-list">
+        <% issues.forEach((issue) => { %>
+          <form method="POST" action="<%= withBase(`/admin/issues/${issue.id}/status`) %>" class="card inset">
+            <h3><%= issue.title %></h3>
+            <p class="muted"><%= issue.site_name %> | by <%= issue.author_name %></p>
+            <label>
+              Status
+              <select name="status">
+                <option value="open" <%= issue.status === 'open' ? 'selected' : '' %>>Open</option>
+                <option value="in_review" <%= issue.status === 'in_review' ? 'selected' : '' %>>In review</option>
+                <option value="resolved" <%= issue.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+              </select>
+            </label>
+            <button class="btn tiny" type="submit">Save Status</button>
+          </form>
+        <% }) %>
+      </div>
+    <% } %>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Direct Messages to Admins</h2>
+  <% if (!messages.length) { %>
+    <p>No direct messages yet.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Site</th>
+            <th>Subject</th>
+            <th>Time</th>
+            <th>Read</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% messages.forEach((message) => { %>
+            <tr>
+              <td><%= message.from_name %></td>
+              <td><%= message.to_name %></td>
+              <td><%= message.site_name || 'n/a' %></td>
+              <td><%= message.subject %></td>
+              <td><%= dayjs(message.created_at).format('MMM D, YYYY h:mm A') %></td>
+              <td>
+                <% if (message.read_at) { %>
+                  <span class="muted">Read</span>
+                <% } else { %>
+                  <form method="POST" action="<%= withBase(`/admin/messages/${message.id}/read`) %>">
+                    <button type="submit" class="btn tiny">Mark Read</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<section class="card">
+  <h2>Audit Log</h2>
+  <% if (!auditLogs || !auditLogs.length) { %>
+    <p>No audit entries yet.</p>
+  <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Actor</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% auditLogs.forEach((entry) => { %>
+            <tr>
+              <td><%= dayjs(entry.created_at).format('MMM D, YYYY h:mm A') %></td>
+              <td><%= entry.actor_name || 'System' %></td>
+              <td><%= entry.action %></td>
+              <td><%= entry.entity_type %> #<%= entry.entity_id || 'n/a' %></td>
+              <td><%= entry.details || '' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

@@ -1,0 +1,41 @@
+<%- include('partials/top', { pageTitle: 'PSLAW Portal Home' }) %>
+
+<section class="hero">
+  <p class="eyebrow">Security Operations + Client Visibility</p>
+  <h1>Site-level updates for every company and location.</h1>
+  <p>
+    Create company profiles, assign staff to approved sites, publish onsite updates with photos,
+    and give clients controlled visibility through their own portal link.
+  </p>
+  <div class="hero-actions">
+    <a class="btn" href="<%= withBase('/register') %>">Create New Profile</a>
+    <a class="btn ghost" href="<%= withBase('/login') %>">Sign In</a>
+  </div>
+</section>
+
+<section class="card-grid two">
+  <article class="card">
+    <h2>Active Companies</h2>
+    <% if (!companies.length) { %>
+      <p>No companies have been added yet.</p>
+    <% } else { %>
+      <ul class="list">
+        <% companies.forEach((company) => { %>
+          <li><%= company.name %></li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </article>
+
+  <article class="card">
+    <h2>What This App Supports</h2>
+    <ul class="list">
+      <li>Company admin controls company, users, sites, and approvals</li>
+      <li>Employees post onsite updates with date/time/location and photos</li>
+      <li>Site issue reporting for field staff</li>
+      <li>Client-only view of approved site updates and direct messaging</li>
+    </ul>
+  </article>
+</section>
+
+<%- include('partials/bottom') %>

@@ -1,0 +1,15 @@
+<%- include('partials/top', { pageTitle: title }) %>
+
+<section class="card narrow">
+  <h1><%= title %></h1>
+  <p><%= message %></p>
+
+  <div class="hero-actions">
+    <% if (typeof backLink !== 'undefined' && backLink) { %>
+      <a class="btn" href="<%= backLink %>">Back</a>
+    <% } %>
+    <a class="btn ghost" href="<%= withBase('/') %>">Home</a>
+  </div>
+</section>
+
+<%- include('partials/bottom') %>

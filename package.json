@@ -1,0 +1,34 @@
+{
+  "name": "private-security-la-worldwide-pslaw-site-update-portal",
+  "version": "1.0.0",
+  "description": "Role-based security operations and client update portal with company/site management.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
+    "ci:check": "node --check app.js && node --check db.js",
+    "test": "npm run ci:check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaccPSLAW/Private-Security-LA-Worldwide-PSLAW-Site-Update-Portal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MaccPSLAW/Private-Security-LA-Worldwide-PSLAW-Site-Update-Portal/issues"
+  },
+  "homepage": "https://github.com/MaccPSLAW/Private-Security-LA-Worldwide-PSLAW-Site-Update-Portal#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-sqlite3": "^0.9.16",
+    "dayjs": "^1.11.20",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "multer": "^2.1.1",
+    "sqlite3": "^6.0.1"
+  }
+}

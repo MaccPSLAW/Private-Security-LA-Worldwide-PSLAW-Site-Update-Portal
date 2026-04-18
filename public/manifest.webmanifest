@@ -1,0 +1,18 @@
+{
+  "name": "PSLAW Security Portal",
+  "short_name": "PSLAW Portal",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3efe6",
+  "theme_color": "#0f6a5c",
+  "description": "Company-scoped security updates and client portal in one installable app.",
+  "icons": [
+    {
+      "src": "/public/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

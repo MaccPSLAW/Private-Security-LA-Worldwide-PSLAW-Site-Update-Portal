@@ -1,0 +1,86 @@
+<%- include('partials/top', { pageTitle: 'Update Chat Detail' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Update Thread</p>
+  <h1><%= update.title %></h1>
+  <p>
+    <%= update.site_name %> | posted by <%= update.author_name %> | occurred <%= update.occurrence_date %> <%= update.occurrence_time %>
+  </p>
+  <div class="hero-actions">
+    <a class="btn ghost" href="<%= withBase('/stream') %>">Back to Chat Stream</a>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Full Update Details</h2>
+  <p><%= update.details %></p>
+  <p class="muted">General location: <%= update.general_location %></p>
+  <% if (update.client_notified) { %>
+    <p class="muted">Client notified: <%= update.client_notified %></p>
+  <% } %>
+  <% if (update.image_path) { %>
+    <a class="btn tiny ghost" href="<%= withBase(update.image_path) %>" target="_blank" rel="noopener">
+      Download <%= update.attachment_name || 'attachment' %>
+    </a>
+    <% if (update.attachment_mime && update.attachment_mime.startsWith('image/')) { %>
+      <img src="<%= withBase(update.image_path) %>" alt="Onsite update attachment" class="update-img" />
+    <% } %>
+  <% } %>
+</section>
+
+<section class="card">
+  <h2>Chat Thread</h2>
+
+  <% if (canAskQuestion) { %>
+    <form method="POST" action="<%= withBase('/stream/update/' + update.id + '/question') %>" class="form-grid compact">
+      <label>
+        Ask a question
+        <textarea name="body" rows="3" required placeholder="Ask staff/admin about this update..."></textarea>
+      </label>
+      <button type="submit" class="btn">Post Question</button>
+    </form>
+  <% } %>
+
+  <% if (!questions.length) { %>
+    <p>No chat messages yet for this update.</p>
+  <% } else { %>
+    <div class="stack-list">
+      <% questions.forEach((question) => { %>
+        <article class="card inset">
+          <p>
+            <strong><%= question.author_name %></strong>
+            <span class="muted">(<%= question.author_role %>) | <%= dayjs(question.created_at).format('MMM D, YYYY h:mm A') %></span>
+          </p>
+          <p><%= question.body %></p>
+
+          <% const replies = repliesByQuestion[question.id] || []; %>
+          <% if (replies.length) { %>
+            <div class="stack-list">
+              <% replies.forEach((reply) => { %>
+                <div class="card inset">
+                  <p>
+                    <strong><%= reply.author_name %></strong>
+                    <span class="muted">(<%= reply.author_role %>) | <%= dayjs(reply.created_at).format('MMM D, YYYY h:mm A') %></span>
+                  </p>
+                  <p><%= reply.body %></p>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+
+          <% if (isStaff) { %>
+            <form method="POST" action="<%= withBase('/stream/message/' + question.id + '/reply') %>" class="form-grid compact">
+              <label>
+                Reply
+                <textarea name="body" rows="2" required placeholder="Reply to this question..."></textarea>
+              </label>
+              <button type="submit" class="btn tiny">Post Reply</button>
+            </form>
+          <% } %>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

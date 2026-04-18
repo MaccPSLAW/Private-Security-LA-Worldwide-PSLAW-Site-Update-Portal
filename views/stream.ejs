@@ -1,0 +1,36 @@
+<%- include('partials/top', { pageTitle: 'Chat Stream' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Company Stream</p>
+  <h1>Update Chat Stream</h1>
+  <p>Every update appears here with a quick preview. Open details to join the thread.</p>
+</section>
+
+<section class="card">
+  <h2>Latest Updates</h2>
+  <% if (!updates.length) { %>
+    <p>No updates are available for your approved sites yet.</p>
+  <% } else { %>
+    <div class="stack-list">
+      <% updates.forEach((update) => { %>
+        <% const questionCount = (questionsByUpdate[update.id] || []).length; %>
+        <article class="card inset">
+          <h3><%= update.title %></h3>
+          <p class="muted">
+            <%= update.site_name %> | by <%= update.author_name %> | <%= dayjs(update.created_at).format('MMM D, YYYY h:mm A') %>
+          </p>
+          <p>
+            <%= update.details.length > 220 ? `${update.details.slice(0, 220)}...` : update.details %>
+          </p>
+          <% if (update.image_path && update.attachment_mime && update.attachment_mime.startsWith('image/')) { %>
+            <img src="<%= withBase(update.image_path) %>" alt="Update image preview" class="update-img" />
+          <% } %>
+          <p class="muted">Questions: <%= questionCount %></p>
+          <a class="btn tiny" href="<%= withBase('/stream/update/' + update.id) %>">Open Details + Chat</a>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

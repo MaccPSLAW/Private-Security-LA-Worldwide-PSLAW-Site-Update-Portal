@@ -1,0 +1,72 @@
+<%- include('partials/top', { pageTitle: 'Add Update' }) %>
+
+<section class="hero mini">
+  <p class="eyebrow">Quick Add Update</p>
+  <h1>Create Site Update</h1>
+  <p>Post an onsite update with optional attachment and visibility controls.</p>
+</section>
+
+<section class="card narrow">
+  <% if (!postableSites.length) { %>
+    <p>No approved sites available for posting.</p>
+  <% } else { %>
+    <form method="POST" action="<%= withBase('/updates/new') %>" enctype="multipart/form-data" class="form-grid">
+      <label>
+        Site selector
+        <select name="siteId" required>
+          <option value="">Select site</option>
+          <% postableSites.forEach((site) => { %>
+            <option value="<%= site.id %>"><%= site.name %> - <%= site.address %></option>
+          <% }) %>
+        </select>
+      </label>
+
+      <label>
+        Title
+        <input name="title" required />
+      </label>
+
+      <label>
+        Date of occurrence
+        <input type="date" name="occurrenceDate" required />
+      </label>
+
+      <label>
+        Time of occurrence
+        <input type="time" name="occurrenceTime" required />
+      </label>
+
+      <label>
+        General location
+        <input name="generalLocation" required />
+      </label>
+
+      <label>
+        Client staff notified (optional)
+        <input name="clientNotified" />
+      </label>
+
+      <label>
+        Visibility
+        <select name="visibility">
+          <option value="staff_client">Visible to client and staff</option>
+          <option value="staff_only">Staff only</option>
+        </select>
+      </label>
+
+      <label>
+        Attachment (optional)
+        <input type="file" name="attachment" />
+      </label>
+
+      <label>
+        Update details
+        <textarea name="details" rows="6" required></textarea>
+      </label>
+
+      <button class="btn" type="submit">Post Update</button>
+    </form>
+  <% } %>
+</section>
+
+<%- include('partials/bottom') %>

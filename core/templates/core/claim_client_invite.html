@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Client Invite Claim | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+  <h2>Client Portal Activation</h2>
+  <p><strong>Company:</strong> {{ invite.company.name }}</p>
+  <p><strong>Approved Site:</strong> {{ invite.site.name }}</p>
+  <p>Create your password to activate your private client portal.</p>
+  <form method="post" class="grid-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Activate Portal</button>
+  </form>
+</section>
+{% endblock %}

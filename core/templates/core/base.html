@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PSLAW Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <div class="background-glow"></div>
+  <header class="topbar">
+    <div>
+      <h1>PSLAW Update Portal</h1>
+      <p>Security updates, site operations, and client communication.</p>
+    </div>
+    <nav>
+      {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin-portal' %}">Company Portal</a>
+        <a href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'employee-signup' %}">Employee Signup</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% if messages %}
+      <section class="flash-wrap">
+        {% for message in messages %}
+          <div class="flash {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,391 @@
+:root {
+  --bg: #f3efe6;
+  --bg-accent: #dce8dd;
+  --ink: #182126;
+  --ink-soft: #5b646c;
+  --brand: #0f6a5c;
+  --brand-2: #e46238;
+  --card: #fffdf8;
+  --line: #d5d1c6;
+  --danger: #8a1f1f;
+  --success: #0b6b3a;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  position: relative;
+  background: linear-gradient(135deg, var(--bg), #f8f2d8 40%, var(--bg-accent));
+}
+
+.page-bg {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(228, 98, 56, 0.12), transparent 32%),
+    radial-gradient(circle at 90% 20%, rgba(15, 106, 92, 0.15), transparent 30%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.2), transparent 40%);
+  z-index: -1;
+}
+
+.container {
+  width: min(1140px, calc(100vw - 2rem));
+  margin: 1rem auto 3rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem;
+  width: min(1140px, calc(100vw - 2rem));
+  margin: 0.8rem auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  backdrop-filter: blur(6px);
+  background: rgba(255, 253, 248, 0.75);
+}
+
+.brand-wrap {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.brand {
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chip {
+  background: #e9f2ef;
+  border: 1px solid #b6d4cb;
+  color: #13463d;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-links a.nav-active {
+  background: #e8f3ef;
+  border: 1px solid #b5d6cb;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  color: #0d4f44;
+  font-weight: 600;
+}
+
+.hero {
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, #fffef9, #f2faef);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  animation: slideIn 0.4s ease;
+}
+
+.hero.mini {
+  padding: 1rem 1.3rem;
+}
+
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand);
+  font-size: 0.8rem;
+}
+
+.hero h1 {
+  margin-top: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.card-grid.two {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.card {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: 0 4px 18px rgba(24, 33, 38, 0.05);
+  animation: slideIn 0.5s ease;
+}
+
+.card.inset {
+  border-style: dashed;
+  background: #fff;
+}
+
+.narrow {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stack-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.form-grid.compact {
+  gap: 0.6rem;
+}
+
+label,
+legend {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.62rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 0.7rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.inline-option {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.inline-option input {
+  width: auto;
+}
+
+.btn {
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: white;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 106, 92, 0.2);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn.tiny {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.flash {
+  width: min(1140px, calc(100vw - 2rem));
+  margin: 0.2rem auto;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.flash.error {
+  background: #ffe8e8;
+  border-color: #f4c3c3;
+  color: var(--danger);
+}
+
+.flash.success {
+  background: #e9f8ef;
+  border-color: #bce3ca;
+  color: var(--success);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.helper-note {
+  margin-top: 0.9rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  padding: 0.55rem;
+}
+
+.inline-form {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.4rem;
+}
+
+.update-img {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 10px;
+  margin-top: 0.55rem;
+  border: 1px solid var(--line);
+}
+
+.actions-inline {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.tab-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.tab-btn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: var(--brand-2);
+  color: #fff;
+  border-color: var(--brand-2);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    padding: 0.8rem;
+  }
+
+  .brand-wrap {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  table {
+    min-width: 560px;
+  }
+}

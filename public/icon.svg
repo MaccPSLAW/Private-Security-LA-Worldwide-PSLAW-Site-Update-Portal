@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="PSLAW Portal">
+  <rect width="256" height="256" rx="40" fill="#0f6a5c"/>
+  <path d="M54 187V69h56c35 0 53 17 53 45 0 29-19 46-54 46H83v27H54zm29-50h24c19 0 28-7 28-22 0-14-9-21-27-21H83v43zm94 50V69h29v118h-29z" fill="#fff6df"/>
+</svg>

@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Login | PSLAW{% endblock %}
+
+{% block content %}
+<section class="panel auth-panel">
+  <h2>Portal Login</h2>
+  <p>Use your email/username and password to access your role-based portal.</p>
+  <form method="post" class="grid-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign In</button>
+  </form>
+  <p class="small">Employee account needed? <a href="{% url 'employee-signup' %}">Create it here</a>.</p>
+</section>
+{% endblock %}
